@@ -22,6 +22,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,7 +50,7 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
-                // Allow ALL preflight OPTIONS requests — critical for CORS to work
+                // Must permit OPTIONS preflight requests before any auth check
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/auth/**", "/api-docs/**", "/swagger-ui/**", "/actuator/health").permitAll()
                 .anyRequest().authenticated())
@@ -81,22 +82,25 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
+        // Base allowed origins — always included
+        List<String> origins = new ArrayList<>(List.of(
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "http://localhost:3000",
+            // Production Vercel frontend — hardcoded as reliable fallback
+            "https://email-marketing-agent.vercel.app"
+        ));
+
+        // Also add any additional origins from CORS_ALLOWED_ORIGINS env var
         if (corsAllowedOrigins != null && !corsAllowedOrigins.trim().isEmpty()) {
-            // Read from CORS_ALLOWED_ORIGINS env var set on Render
-            List<String> origins = Arrays.stream(corsAllowedOrigins.split(","))
+            List<String> extraOrigins = Arrays.stream(corsAllowedOrigins.split(","))
                     .map(String::trim)
                     .filter(s -> !s.isEmpty())
                     .collect(Collectors.toList());
-            configuration.setAllowedOrigins(origins);
-        } else {
-            // Local development fallback
-            configuration.setAllowedOrigins(List.of(
-                "http://localhost:5173",
-                "http://127.0.0.1:5173",
-                "http://localhost:3000"
-            ));
+            origins.addAll(extraOrigins);
         }
 
+        configuration.setAllowedOrigins(origins);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("Authorization"));
