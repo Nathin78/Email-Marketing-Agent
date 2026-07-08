@@ -3,7 +3,7 @@ import { Alert, Box, Button, Stack, TextField, Typography, Grid, Chip } from '@m
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
-import { Zap, Sparkles, Users, Lock, Mail, User, Building2, Phone, Briefcase } from 'lucide-react';
+import { Zap, Sparkles, Users, Lock, Mail, User, Phone } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import AuroraBackground from '../components/AuroraBackground';
@@ -320,25 +320,6 @@ export default function Signup() {
                     '& .MuiInputLabel-root.Mui-focused': { color: '#FF8C00' }
                   }}
                 />
-                
-                <TextField
-                  label="Company Name"
-                  fullWidth
-                  {...register('companyName')}
-                  InputProps={{
-                    startAdornment: <Building2 size={18} style={{ marginRight: 12, color: 'rgba(255,255,255,0.4)' }} />
-                  }}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      color: '#fff',
-                      '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.08)' },
-                      '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.2)' },
-                      '&.Mui-focused fieldset': { borderColor: '#FF8C00' }
-                    },
-                    '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.5)' },
-                    '& .MuiInputLabel-root.Mui-focused': { color: '#FF8C00' }
-                  }}
-                />
 
                 <TextField
                   label="Phone Number"
@@ -359,24 +340,6 @@ export default function Signup() {
                   }}
                 />
 
-                <TextField
-                  label="Industry"
-                  fullWidth
-                  {...register('industry')}
-                  InputProps={{
-                    startAdornment: <Briefcase size={18} style={{ marginRight: 12, color: 'rgba(255,255,255,0.4)' }} />
-                  }}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      color: '#fff',
-                      '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.08)' },
-                      '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.2)' },
-                      '&.Mui-focused fieldset': { borderColor: '#FF8C00' }
-                    },
-                    '& .MuiInputLabel-root': { color: 'rgba(255, 255, 255, 0.5)' },
-                    '& .MuiInputLabel-root.Mui-focused': { color: '#FF8C00' }
-                  }}
-                />
 
                 <TextField
                   label="Email Address"
