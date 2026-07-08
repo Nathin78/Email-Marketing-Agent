@@ -1,7 +1,7 @@
 package com.emailagent.config;
 
 import com.emailagent.security.JwtAuthenticationFilter;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,15 +21,26 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
+
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final com.emailagent.security.UserDetailsServiceImpl userDetailsService;
+
+    @Value("${cors.allowed-origins:}")
+    private String corsAllowedOrigins;
+
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
+                          com.emailagent.security.UserDetailsServiceImpl userDetailsService) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.userDetailsService = userDetailsService;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -65,20 +76,28 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        
-        String allowedOriginsEnv = System.getenv("CORS_ALLOWED_ORIGINS");
-        if (allowedOriginsEnv != null && !allowedOriginsEnv.trim().isEmpty()) {
-            java.util.List<String> origins = java.util.stream.Stream.of(allowedOriginsEnv.split(","))
+
+        if (corsAllowedOrigins != null && !corsAllowedOrigins.trim().isEmpty()) {
+            // Read from CORS_ALLOWED_ORIGINS env var set on Render
+            List<String> origins = Arrays.stream(corsAllowedOrigins.split(","))
                     .map(String::trim)
-                    .collect(java.util.stream.Collectors.toList());
+                    .filter(s -> !s.isEmpty())
+                    .collect(Collectors.toList());
             configuration.setAllowedOrigins(origins);
         } else {
-            configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:3000"));
+            // Local development fallback
+            configuration.setAllowedOrigins(List.of(
+                "http://localhost:5173",
+                "http://127.0.0.1:5173",
+                "http://localhost:3000"
+            ));
         }
-        
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"));
         configuration.setAllowedHeaders(List.of("*"));
+        configuration.setExposedHeaders(List.of("Authorization"));
         configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
