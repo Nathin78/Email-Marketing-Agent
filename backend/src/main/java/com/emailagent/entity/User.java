@@ -32,6 +32,18 @@ public class User {
     @Column(nullable = false)
     private String role;
 
+    @Column(name = "company_name")
+    private String companyName;
+
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
+    @Column
+    private String industry;
+
+    @Column(name = "reset_code")
+    private String resetCode;
+
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LoginHistory> loginHistories = new ArrayList<>();

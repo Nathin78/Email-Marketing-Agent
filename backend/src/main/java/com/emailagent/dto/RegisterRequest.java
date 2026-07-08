@@ -15,4 +15,8 @@ public class RegisterRequest {
 
     @NotBlank
     private String password;
+
+    private String companyName;
+    private String phoneNumber;
+    private String industry;
 }

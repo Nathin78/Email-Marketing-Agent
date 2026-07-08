@@ -44,10 +44,12 @@ public class GroqService {
     @PostConstruct
     public void validateConfiguration() {
         if (apiKey == null || apiKey.isBlank()) {
-            throw new IllegalStateException("Groq API key is missing. Set ai.groq.api-key in application.properties.");
+            System.err.println("⚠️ WARNING: Groq API key is missing. Please set ai.groq.api-key in application.properties or set the GROQ_API_KEY environment variable. AI features will not work until set.");
+            return;
         }
         if (model == null || model.isBlank()) {
-            throw new IllegalStateException("Groq model is missing. Set ai.groq.model in application.properties.");
+            System.err.println("⚠️ WARNING: Groq model is missing. Please set ai.groq.model in application.properties.");
+            return;
         }
 
         // Log masked key for debugging
