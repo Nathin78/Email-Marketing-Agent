@@ -11,6 +11,7 @@ import com.emailagent.repository.LoginHistoryRepository;
 import com.emailagent.repository.UserRepository;
 import com.emailagent.security.JwtService;
 import com.emailagent.service.AuthService;
+import com.emailagent.service.EmailSenderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,6 +28,7 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final LoginHistoryRepository loginHistoryRepository;
+    private final EmailSenderService emailSenderService;
 
     @Override
     public AuthResponse register(RegisterRequest request) {
@@ -58,6 +60,11 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse login(LoginRequest request) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new RuntimeException("User not found"));
+
+        long loginCount = loginHistoryRepository.countByUserId(user.getId());
+        if (loginCount == 0) {
+            emailSenderService.sendWelcomeEmail(user.getEmail(), user.getName());
+        }
 
         LoginHistory history = LoginHistory.builder().user(user).loginTime(LocalDateTime.now()).build();
         loginHistoryRepository.save(history);

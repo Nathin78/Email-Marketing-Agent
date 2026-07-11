@@ -1,5 +1,5 @@
 import { AppBar, Avatar, Box, Divider, Drawer, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography, TextField, Popover, Badge, List as MuiList, ListItem } from '@mui/material';
-import { Sparkles, RadioTower, Users, LineChart, History, LayoutGrid, Settings, Search, Bell, MoonStar, Sun, Zap, ChevronRight, PenTool, LogOut, X, FileText, Calendar, Activity } from 'lucide-react';
+import { Sparkles, RadioTower, Users, LineChart, History, LayoutGrid, Settings, Search, Bell, Zap, ChevronRight, PenTool, LogOut, X, FileText, Calendar, Activity, User } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
 import { useAuth } from '../context/AuthContext';
@@ -20,6 +20,7 @@ const items = [
   ['Customers', '/customers', <Users size={18} />],
   ['Analytics', '/analytics', <LineChart size={18} />],
   ['History', '/history', <History size={18} />],
+  ['Profile', '/profile', <User size={18} />],
   ['Settings', '/settings', <Settings size={18} />]
 ];
 
@@ -29,7 +30,6 @@ export default function Layout({ children }) {
   const location = useLocation();
   const { searchQuery, setSearchQuery } = useContext(SearchContext);
   const notificationStream = useRealtimeNotifications();
-  const [darkMode, setDarkMode] = useState(true);
   const [notifAnchor, setNotifAnchor] = useState(null);
   const [notifications, setNotifications] = useState([
     { id: 1, message: 'Campaign "Q4 Sales" sent successfully', time: '2 mins ago', type: 'success' },
@@ -150,7 +150,7 @@ export default function Layout({ children }) {
                   };
                   return (
                     <ListItem key={notif.id} sx={{ py: 1.5, px: 2, borderBottom: '1px solid rgba(255,140,0,0.1)', '&:hover': { background: 'rgba(255,140,0,0.08)' }, borderLeft: `3px solid ${getTypeColor(notif.type)}` }}>
-                      <Box>
+                       <Box>
                         <Typography variant="body2" sx={{ color: '#fff' }}>{notif.message}</Typography>
                         <Typography variant="caption" color="text.secondary">{notif.time}</Typography>
                       </Box>
@@ -160,14 +160,28 @@ export default function Layout({ children }) {
               </MuiList>
             </Box>
           </Popover>
-          <IconButton 
-            onClick={() => setDarkMode(!darkMode)}
-            sx={{ color: '#FFD700', background: 'rgba(255,184,0,0.1)', border: '1px solid rgba(255,184,0,0.3)' }}
-          >
-            {darkMode ? <Sun size={18} /> : <MoonStar size={18} />}
-          </IconButton>
           <IconButton onClick={handleLogout} sx={{ color: '#FF8C00', background: 'rgba(255,140,0,0.1)', border: '1px solid rgba(255,140,0,0.3)' }}><LogOut size={18} /></IconButton>
-          <GlassPanel sx={{ px: 1.5, py: 1, display: 'flex', alignItems: 'center', gap: 1, background: 'rgba(255,140,0,0.08)', border: '1px solid rgba(255,140,0,0.2)' }}>
+          <GlassPanel 
+            component={Link} 
+            to="/profile" 
+            sx={{ 
+              px: 1.5, 
+              py: 1, 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: 1, 
+              background: 'rgba(255,140,0,0.08)', 
+              border: '1px solid rgba(255,140,0,0.2)',
+              textDecoration: 'none',
+              color: 'inherit',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              '&:hover': {
+                background: 'rgba(255,140,0,0.15)',
+                borderColor: 'rgba(255,140,0,0.4)',
+              }
+            }}
+          >
             <Avatar sx={{ width: 32, height: 32, bgcolor: '#FF8C00' }}>{user?.name?.[0] || 'U'}</Avatar>
             <Box><Typography variant="body2" sx={{ fontWeight: 700 }}>{user?.name || 'User'}</Typography><Typography variant="caption" color="text.secondary">Premium</Typography></Box>
           </GlassPanel>

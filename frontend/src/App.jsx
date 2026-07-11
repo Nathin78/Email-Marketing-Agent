@@ -13,6 +13,7 @@ import History from './pages/History';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
 import Templates from './pages/Templates';
+import Profile from './pages/Profile';
 import EmailScheduling from './pages/EmailScheduling';
 import DeliverabilityReports from './pages/DeliverabilityReports';
 import Landing from './pages/Landing';
@@ -55,6 +56,7 @@ function AppRoutes() {
       <Route path="/templates" element={<ProtectedRoute><Layout><Templates /></Layout></ProtectedRoute>} />
       <Route path="/schedule" element={<ProtectedRoute><Layout><EmailScheduling /></Layout></ProtectedRoute>} />
       <Route path="/deliverability" element={<ProtectedRoute><Layout><DeliverabilityReports /></Layout></ProtectedRoute>} />
+      <Route path="/profile" element={<ProtectedRoute><Layout><Profile /></Layout></ProtectedRoute>} />
     </Routes>
   );
 }
